@@ -1,13 +1,11 @@
 const Agenda = require('agenda');
-require('./mongooseSetup'); // Ensures MongoDB connection is established
-
+require('./mongooseSetup');
 const agenda = new Agenda({ 
-    db: { address: 'mongodb://localhost:27017/SchedulerDB', collection: 'agendaJobs' }
+    db: { address: 'mongodb://localhost:27017/SchedulerDB', collection: 'jobs' }
 });
 
 agenda.define('send message', async job => {
     const { userId, message } = job.attrs.data;
-    // Implement your message sending logic here
     console.log(`Sending message to user ${userId}: ${message}`);
 });
 
