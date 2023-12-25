@@ -17,7 +17,7 @@ agenda.define('send message', async job => {
     try {
         const user = await User.findOne({ _id: userId });
         if (user) {
-            console.log(`Sending message to user ${user.name}: ${message}: ${job.attrs._id}`);
+            console.log(`Sending message to ${user.name}: ${message} => ${job.attrs._id}`);
         } else {
             console.log(`User with ID ${userId} not found.`);
         }

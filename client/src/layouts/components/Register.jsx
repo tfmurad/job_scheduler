@@ -1,54 +1,61 @@
-"use client"
+"use client";
 
 import { useState } from "react";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const Register = () => {
-  const [userId, setUserId] = useState('');
-  const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:9000/api/register', {
-        method: 'POST',
+      const response = await fetch("http://localhost:9000/api/subscribe", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name:userId, email:userEmail }),
+        body: JSON.stringify({ name: userName, email: userEmail }),
       });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+      // if (!response.ok) {
+      //   throw new Error("Network response was not ok");
+      // }
       const data = await response.json();
       toast.success(data.message);
     } catch (error) {
-      toast.error('Error: ' + error.message);
+      toast.error("Error: " + error.message);
     }
   };
 
   return (
     <div>
-      <h1>Register User</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <h2>Join Newsletter</h2>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-y-4 mt-4">
         <input
+          className="rounded"
           type="text"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
           placeholder="Enter You Name"
           required
         />
         <input
+          className="rounded"
           type="email"
           value={userEmail}
           onChange={(e) => setUserEmail(e.target.value)}
           placeholder="Enter You Email"
           required
         />
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">Register</button>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          type="submit"
+        >
+          Register
+        </button>
       </form>
     </div>
   );
-}
+};
 
-export default Register
+export default Register;

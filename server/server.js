@@ -9,52 +9,62 @@ app.use(express.json());
 app.use(cors());
 
 
-app.post('/api/register', async (req, res) => {
-    try {
-      const { name, email } = req.body;
-      console.log({ name, email });
+// app.post('/api/subscribe', async (req, res) => {
+//     try {
+//       const { name, email } = req.body;
   
-      const newUser = new User({ name, email, jobs: [] });
+//       const newUser = new User({ name, email, jobs: [] });
   
-      await agenda.start();
-      const job1 = await agenda.schedule('in 2 seconds', 'send message', { userId: newUser._id, message: 'First message' });
-      const job2 = await agenda.schedule('in 4 seconds', 'send message', { userId: newUser._id, message: 'Second message' });
-      const job3 = await agenda.schedule('in 10 seconds', 'send message', { userId: newUser._id, message: 'Third message' });
+//       await agenda.start();
+//       const job1 = await agenda.schedule('in 2 seconds', 'send message', { userId: newUser._id, message: 'First message' });
+//       const job2 = await agenda.schedule('in 4 seconds', 'send message', { userId: newUser._id, message: 'Second message' });
+//       const job3 = await agenda.schedule('in 10 seconds', 'send message', { userId: newUser._id, message: 'Third message' });
   
-      newUser.jobs.push(job1.attrs._id, job2.attrs._id, job3.attrs._id);
-      await newUser.save();
+//       newUser.jobs.push(job1.attrs._id, job2.attrs._id, job3.attrs._id);
+//       await newUser.save();
   
-      res.status(201).json({ message: 'User created successfully' });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error creating user');
+//       res.status(201).json({ message: `Welcome ${name}!!` });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).send('Error subscribing user');
+//     }
+//   });
+
+app.post('/api/subscribe', async (req, res) => {
+  try {
+    const { name, email } = req.body;
+
+    // Check if the email already exists in the database
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email already subscribed' });
     }
-  });
+
+    const newUser = new User({ name, email, jobs: [] });
+
+    await agenda.start();
+    const job1 = await agenda.schedule('in 2 seconds', 'send message', { userId: newUser._id, message: 'First message' });
+    const job2 = await agenda.schedule('in 4 seconds', 'send message', { userId: newUser._id, message: 'Second message' });
+    const job3 = await agenda.schedule('in 10 seconds', 'send message', { userId: newUser._id, message: 'Third message' });
+
+    newUser.jobs.push(job1.attrs._id, job2.attrs._id, job3.attrs._id);
+    await newUser.save();
+
+    res.status(201).json({ message: `Welcome ${name}!!` });
+  } catch (error) {
+    // console.error(error);
+    res.status(500).send('Error subscribing user');
+  }
+});
+
   
-
-// app.post('/register', async (req, res) => {
-//     const { userId } = req.body;
-
-//     await agenda.start();
-//     await agenda.schedule('in 2 seconds', 'send message', { userId, message: 'First message' });
-//     await agenda.schedule('in 4 seconds', 'send message', { userId, message: 'Second message' });
-//     await agenda.schedule('in 10 seconds', 'send message', { userId, message: 'Third message' });
-
-//     res.status(200).json({ message: 'Messages scheduled' });
-// });
-
-// app.post('/cancel', async (req, res) => {
-//     const { userId } = req.body;
-
-//     await agenda.cancel({ 'data.userId': userId });
-//     res.status(200).json({ message: 'Messages cancelled' });
-// });
-  
-app.post('/api/cancel', async (req, res) => {
-    const { userId:userName } = req.body;
+app.post('/api/unsubscribe', async (req, res) => {
+    const { userEmail } = req.body;
+    console.log(userEmail)
 
     try {
-        const user = await User.findOne({ name: userName });
+        const user = await User.findOne({ email: userEmail });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -63,7 +73,7 @@ app.post('/api/cancel', async (req, res) => {
         user.jobs = [];
         await user.save();
 
-        res.status(200).json({ message: 'Messages cancelled and user jobs array cleared' });
+        res.status(200).json({ message: `Farewell, ${user.name}!!` });
     } catch (error) {
         console.error('Error cancelling jobs:', error);
         res.status(500).json({ message: 'Internal server error' });
