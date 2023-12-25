@@ -9,7 +9,7 @@ const Cancel = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:9000/cancel', {
+      const response = await fetch('http://localhost:9000/api/cancel', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
